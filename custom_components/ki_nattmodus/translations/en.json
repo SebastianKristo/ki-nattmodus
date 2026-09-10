@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "KI Nattmodus",
+        "description": "One switch (switch.nattmodus) that puts the house in night mode. Everything can be changed later under Configure.",
+        "data": {
+          "media_av": "TV / media players to turn off",
+          "lys_av": "Lights and switches to turn off",
+          "alle_lys_av": "Turn off ALL lights (except night lights)",
+          "lys_pa": "Night lights to turn on",
+          "lysstyrke": "Night light brightness",
+          "laser": "Locks to lock",
+          "gardiner": "Covers to close",
+          "scener": "Scenes/scripts to run on activation",
+          "scener_av": "Scenes/scripts to run on deactivation",
+          "gjenopprett": "Restore lights as they were on deactivation",
+          "nattlys_av_ved_deaktivering": "Turn off night lights on deactivation",
+          "tid_pa": "Activate automatically at (optional)",
+          "tid_av": "Deactivate automatically at (optional)",
+          "kun_hjemme": "Automation only when someone is home"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "KI Nattmodus er allerede satt opp."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "KI Nattmodus",
+        "data": {
+          "media_av": "TV / media players to turn off",
+          "lys_av": "Lights and switches to turn off",
+          "alle_lys_av": "Turn off ALL lights (except night lights)",
+          "lys_pa": "Night lights to turn on",
+          "lysstyrke": "Night light brightness",
+          "laser": "Locks to lock",
+          "gardiner": "Covers to close",
+          "scener": "Scenes/scripts to run on activation",
+          "scener_av": "Scenes/scripts to run on deactivation",
+          "gjenopprett": "Restore lights as they were on deactivation",
+          "nattlys_av_ved_deaktivering": "Turn off night lights on deactivation",
+          "tid_pa": "Activate automatically at (optional)",
+          "tid_av": "Deactivate automatically at (optional)",
+          "kun_hjemme": "Automation only when someone is home"
+        }
+      }
+    }
+  },
+  "services": {
+    "aktiver": {
+      "name": "Aktiver nattmodus",
+      "description": "Slår av TV/media og valgte lys, tenner nattlys, låser og lukker gardiner."
+    },
+    "deaktiver": {
+      "name": "Deaktiver nattmodus",
+      "description": "Slår av nattlys og gjenoppretter lysene."
+    },
+    "veksle": {
+      "name": "Veksle nattmodus",
+      "description": "Aktiverer hvis av, deaktiverer hvis på."
+    }
+  }
+}

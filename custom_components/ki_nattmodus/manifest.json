@@ -1,0 +1,13 @@
+{
+  "domain": "ki_nattmodus",
+  "name": "KI Nattmodus",
+  "version": "1.0.0",
+  "codeowners": ["@SebastianKristo"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/SebastianKristo/ki-nattmodus",
+  "integration_type": "hub",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/SebastianKristo/ki-nattmodus/issues",
+  "requirements": []
+}

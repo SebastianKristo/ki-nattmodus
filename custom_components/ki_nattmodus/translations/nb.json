@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "KI Nattmodus",
+        "description": "Én bryter (switch.nattmodus) som setter huset i nattmodus. Alt kan endres senere under Konfigurer.",
+        "data": {
+          "media_av": "TV / media som slås av",
+          "lys_av": "Lys og brytere som slås av",
+          "alle_lys_av": "Slå av ALLE lys (unntatt nattlysene)",
+          "lys_pa": "Nattlys som slås på",
+          "lysstyrke": "Lysstyrke på nattlysene",
+          "laser": "Låser som låses",
+          "gardiner": "Gardiner/markiser som lukkes",
+          "scener": "Scener/skript som kjøres ved aktivering",
+          "scener_av": "Scener/skript som kjøres ved deaktivering",
+          "gjenopprett": "Gjenopprett lysene slik de var, ved deaktivering",
+          "nattlys_av_ved_deaktivering": "Slå av nattlysene ved deaktivering",
+          "tid_pa": "Aktiver automatisk klokka (valgfritt)",
+          "tid_av": "Deaktiver automatisk klokka (valgfritt)",
+          "kun_hjemme": "Automatikk bare når noen er hjemme"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "KI Nattmodus er allerede satt opp."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "KI Nattmodus",
+        "data": {
+          "media_av": "TV / media som slås av",
+          "lys_av": "Lys og brytere som slås av",
+          "alle_lys_av": "Slå av ALLE lys (unntatt nattlysene)",
+          "lys_pa": "Nattlys som slås på",
+          "lysstyrke": "Lysstyrke på nattlysene",
+          "laser": "Låser som låses",
+          "gardiner": "Gardiner/markiser som lukkes",
+          "scener": "Scener/skript som kjøres ved aktivering",
+          "scener_av": "Scener/skript som kjøres ved deaktivering",
+          "gjenopprett": "Gjenopprett lysene slik de var, ved deaktivering",
+          "nattlys_av_ved_deaktivering": "Slå av nattlysene ved deaktivering",
+          "tid_pa": "Aktiver automatisk klokka (valgfritt)",
+          "tid_av": "Deaktiver automatisk klokka (valgfritt)",
+          "kun_hjemme": "Automatikk bare når noen er hjemme"
+        }
+      }
+    }
+  },
+  "services": {
+    "aktiver": {
+      "name": "Aktiver nattmodus",
+      "description": "Slår av TV/media og valgte lys, tenner nattlys, låser og lukker gardiner."
+    },
+    "deaktiver": {
+      "name": "Deaktiver nattmodus",
+      "description": "Slår av nattlys og gjenoppretter lysene."
+    },
+    "veksle": {
+      "name": "Veksle nattmodus",
+      "description": "Aktiverer hvis av, deaktiverer hvis på."
+    }
+  }
+}

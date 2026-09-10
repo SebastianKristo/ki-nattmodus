@@ -1,0 +1,9 @@
+aktiver:
+  name: Aktiver nattmodus
+  description: Slår av TV/media og valgte lys, tenner nattlys, låser og lukker gardiner.
+deaktiver:
+  name: Deaktiver nattmodus
+  description: Slår av nattlys og gjenoppretter lysene slik de var (hvis valgt).
+veksle:
+  name: Veksle nattmodus
+  description: Aktiverer hvis av, deaktiverer hvis på.
