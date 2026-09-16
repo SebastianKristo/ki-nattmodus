@@ -17,6 +17,9 @@ CONF_NATTLYS_AV_VED_DEAKT = "nattlys_av_ved_deaktivering"
 CONF_TID_PA = "tid_pa"              # automatisk aktivering (HH:MM)
 CONF_TID_AV = "tid_av"              # automatisk deaktivering (HH:MM)
 CONF_KUN_HJEMME = "kun_hjemme"      # bare automatisk hvis noen er hjemme (person.*)
+# Sekunder etter aktivering før vi sjekker at lysene faktisk ble slukket, og prøver
+# en gang til på dem som fortsatt står på. 0 slår kontrollen av.
+CONF_ETTERKONTROLL = "etterkontroll"
 
 SERVICE_AKTIVER = "aktiver"
 SERVICE_DEAKTIVER = "deaktiver"

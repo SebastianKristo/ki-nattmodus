@@ -18,7 +18,8 @@
           "nattlys_av_ved_deaktivering": "Slå av nattlysene ved deaktivering",
           "tid_pa": "Aktiver automatisk klokka (valgfritt)",
           "tid_av": "Deaktiver automatisk klokka (valgfritt)",
-          "kun_hjemme": "Automatikk bare når noen er hjemme"
+          "kun_hjemme": "Automatikk bare når noen er hjemme",
+          "etterkontroll": "Sekunder før kontroll av at lysene ble slukket (0 = av)"
         }
       }
     },
@@ -44,7 +45,8 @@
           "nattlys_av_ved_deaktivering": "Slå av nattlysene ved deaktivering",
           "tid_pa": "Aktiver automatisk klokka (valgfritt)",
           "tid_av": "Deaktiver automatisk klokka (valgfritt)",
-          "kun_hjemme": "Automatikk bare når noen er hjemme"
+          "kun_hjemme": "Automatikk bare når noen er hjemme",
+          "etterkontroll": "Sekunder før kontroll av at lysene ble slukket (0 = av)"
         }
       }
     }

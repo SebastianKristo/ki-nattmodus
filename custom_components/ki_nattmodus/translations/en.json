@@ -18,7 +18,8 @@
           "nattlys_av_ved_deaktivering": "Turn off night lights on deactivation",
           "tid_pa": "Activate automatically at (optional)",
           "tid_av": "Deactivate automatically at (optional)",
-          "kun_hjemme": "Automation only when someone is home"
+          "kun_hjemme": "Automation only when someone is home",
+          "etterkontroll": "Seconds before verifying the lights went off (0 = off)"
         }
       }
     },
@@ -44,7 +45,8 @@
           "nattlys_av_ved_deaktivering": "Turn off night lights on deactivation",
           "tid_pa": "Activate automatically at (optional)",
           "tid_av": "Deactivate automatically at (optional)",
-          "kun_hjemme": "Automation only when someone is home"
+          "kun_hjemme": "Automation only when someone is home",
+          "etterkontroll": "Seconds before verifying the lights went off (0 = off)"
         }
       }
     }

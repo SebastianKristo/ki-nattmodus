@@ -12,8 +12,11 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_change
 from homeassistant.util import dt as dt_util
 
+from homeassistant.helpers.event import async_call_later
+
 from .const import (
     CONF_ALLE_LYS_AV,
+    CONF_ETTERKONTROLL,
     CONF_GARDINER,
     CONF_GJENOPPRETT,
     CONF_KUN_HJEMME,
@@ -102,17 +105,48 @@ class Nattmodus:
 
     # ------------------------------------------------------------ handlinger
     async def _call(self, domain: str, service: str, entity_ids: list[str], **data: Any) -> None:
+        """Kall tjenesten for lista, og fall tilbake til én og én hvis noe feiler.
+
+        Home Assistant avviser hele kallet når én entitet i lista ikke tåler det — for
+        eksempel et lys som ikke støtter `transition`, eller en entitet som er
+        utilgjengelig. Da ble ingen av lysene i lista slått av, og loggen nevnte bare
+        hele lista. Nå prøver vi én og én etterpå, så resten blir slått av og loggen
+        peker på entiteten som faktisk er problemet.
+        """
         if not entity_ids:
             return
         try:
             await self.hass.services.async_call(
                 domain, service, {"entity_id": entity_ids, **data}, blocking=True
             )
+            return
         except Exception as err:  # noqa: BLE001
-            _LOGGER.warning("Nattmodus: %s.%s feilet for %s: %s", domain, service, entity_ids, err)
+            if len(entity_ids) == 1:
+                _LOGGER.warning("Nattmodus: %s.%s feilet for %s: %s",
+                                domain, service, entity_ids[0], err)
+                return
+            _LOGGER.warning("Nattmodus: %s.%s feilet for gruppen, prøver én og én: %s",
+                            domain, service, err)
+
+        for eid in entity_ids:
+            try:
+                await self.hass.services.async_call(
+                    domain, service, {"entity_id": eid, **data}, blocking=True
+                )
+            except Exception as err:  # noqa: BLE001
+                _LOGGER.warning("Nattmodus: %s.%s feilet for %s: %s", domain, service, eid, err)
 
     def _lys_som_skal_av(self) -> list[str]:
         lys_pa = set(self._liste(CONF_LYS_PA))
+        # Står et lys i begge listene, vinner nattlys — og lyset blir aldri slått av.
+        # Det er den ene oppsettfeilen som ser ut som en programfeil.
+        begge = lys_pa & set(self._liste(CONF_LYS_AV))
+        if begge and begge != getattr(self, "_advart_om", None):
+            self._advart_om = begge
+            _LOGGER.warning(
+                "Nattmodus: %s står både i «lys som slås av» og «nattlys». Nattlys "
+                "vinner, så de blir ikke slått av. Fjern dem fra én av listene.",
+                ", ".join(sorted(begge)))
         if self.options.get(CONF_ALLE_LYS_AV):
             alle = [
                 st.entity_id
@@ -164,7 +198,42 @@ class Nattmodus:
         self.sist_aktivert = dt_util.now()
         async_dispatcher_send(self.hass, SIGNAL_OPPDATERT)
 
+        # Etterkontroll: noen lys melder «on» igjen rett etter, eller rakk ikke å svare.
+        # Vi ser på dem en gang til og prøver på nytt, i stedet for å anta at kallet
+        # gikk gjennom.
+        self._etterkontroll = async_call_later(
+            self.hass, float(self.options.get(CONF_ETTERKONTROLL, 5) or 0) or 5,
+            self._sjekk_at_lysene_er_av)
+
+    async def _sjekk_at_lysene_er_av(self, _naa=None) -> None:
+        """Slår av igjen det som fortsatt står på, og sier hvilket lys det var."""
+        self._etterkontroll = None
+        if not self.aktiv or self.options.get(CONF_ETTERKONTROLL) == 0:
+            return
+        lys_pa = set(self._liste(CONF_LYS_PA))
+        fortsatt: list[str] = []
+        for eid in self._lys_som_skal_av():
+            if eid in lys_pa:
+                continue
+            st = self.hass.states.get(eid)
+            if st is not None and st.state == "on":
+                fortsatt.append(eid)
+        if not fortsatt:
+            return
+        _LOGGER.warning(
+            "Nattmodus: disse lysene sto fortsatt på etter avslåingen, prøver igjen: %s. "
+            "Skjer det hver gang, slår noe dem på igjen — en bevegelsesautomasjon, en "
+            "bryter på veggen, eller en scene som kjører etterpå.",
+            ", ".join(fortsatt))
+        for eid in fortsatt:
+            domene = eid.split(".")[0]
+            await self._call(domene if domene in ("light", "switch") else "homeassistant",
+                             "turn_off", [eid])
+
     async def async_deaktiver(self, kilde: str = "manuell") -> None:
+        if getattr(self, "_etterkontroll", None):
+            self._etterkontroll()
+            self._etterkontroll = None
         _LOGGER.info("Nattmodus deaktiveres (%s)", kilde)
         lys_pa = self._liste(CONF_LYS_PA)
 

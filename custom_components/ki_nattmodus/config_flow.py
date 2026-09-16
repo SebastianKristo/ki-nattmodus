@@ -13,6 +13,7 @@ from .const import (
     CONF_ALLE_LYS_AV,
     CONF_GARDINER,
     CONF_GJENOPPRETT,
+    CONF_ETTERKONTROLL,
     CONF_KUN_HJEMME,
     CONF_LASER,
     CONF_LYS_AV,
@@ -34,6 +35,10 @@ SCHEMA = vol.Schema(
         vol.Optional(CONF_LYS_AV): selector.EntitySelector(selector.EntitySelectorConfig(domain=["light", "switch", "fan"], multiple=True)),
         vol.Optional(CONF_ALLE_LYS_AV, default=False): selector.BooleanSelector(),
         vol.Optional(CONF_LYS_PA): selector.EntitySelector(selector.EntitySelectorConfig(domain=["light", "switch"], multiple=True)),
+        vol.Optional(CONF_ETTERKONTROLL, default=d.get(CONF_ETTERKONTROLL, 5)):
+            selector.NumberSelector(selector.NumberSelectorConfig(
+                min=0, max=120, step=1, unit_of_measurement="sek",
+                mode=selector.NumberSelectorMode.BOX)),
         vol.Optional(CONF_LYSSTYRKE, default=20): selector.NumberSelector(selector.NumberSelectorConfig(min=1, max=100, step=1, unit_of_measurement="%", mode="slider")),
         vol.Optional(CONF_LASER): selector.EntitySelector(selector.EntitySelectorConfig(domain="lock", multiple=True)),
         vol.Optional(CONF_GARDINER): selector.EntitySelector(selector.EntitySelectorConfig(domain="cover", multiple=True)),
