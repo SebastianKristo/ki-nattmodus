@@ -35,7 +35,10 @@ SCHEMA = vol.Schema(
         vol.Optional(CONF_LYS_AV): selector.EntitySelector(selector.EntitySelectorConfig(domain=["light", "switch", "fan"], multiple=True)),
         vol.Optional(CONF_ALLE_LYS_AV, default=False): selector.BooleanSelector(),
         vol.Optional(CONF_LYS_PA): selector.EntitySelector(selector.EntitySelectorConfig(domain=["light", "switch"], multiple=True)),
-        vol.Optional(CONF_ETTERKONTROLL, default=d.get(CONF_ETTERKONTROLL, 5)):
+        # SCHEMA bygges når modulen importeres, så standardverdien må være en konstant.
+        # Lagrede verdier fylles inn av add_suggested_values_to_schema i options-flyten
+        # under; et oppslag her var både ugyldig og unødvendig.
+        vol.Optional(CONF_ETTERKONTROLL, default=5):
             selector.NumberSelector(selector.NumberSelectorConfig(
                 min=0, max=120, step=1, unit_of_measurement="sek",
                 mode=selector.NumberSelectorMode.BOX)),

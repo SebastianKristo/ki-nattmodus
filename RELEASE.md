@@ -1,33 +1,30 @@
-# KI Nattmodus 1.1.0
+# KI Nattmodus 1.1.1
 
-## Ett lys ble ikke slått av
+## Integrasjonen startet ikke
 
-Tre ting er gjort, og til sammen dekker de både årsakene og feilsøkingen.
+```
+File "/config/custom_components/ki_nattmodus/config_flow.py", line 38, in <module>
+    vol.Optional(CONF_ETTERKONTROLL, default=d.get(CONF_ETTERKONTROLL, 5)):
+NameError: name 'd' is not defined
+```
 
-**Én vrang entitet tok hele gruppen med seg.** Avslåingen sendte alle lysene i ett
-tjenestekall. Avviser Home Assistant kallet — fordi én entitet er utilgjengelig, eller
-ikke tåler et parameter — feiler hele kallet, og *ingen* av lysene blir slått av. Loggen
-nevnte bare hele lista, så det var umulig å se hvilket lys som var problemet.
+`SCHEMA` er en konstant som bygges når modulen importeres. Der finnes ingen `d` — den
+hører til en funksjon som leser lagrede verdier. Importen kastet derfor, og Home
+Assistant fikk aldri lastet config_flow:
 
-Nå prøves gruppen først, og feiler den, tas lysene én og én. Resten blir slått av, og
-loggen peker på entiteten som faktisk avviste kallet.
+```
+Error importing platform config_flow from integration ki_nattmodus
+to set up ki_nattmodus configuration entry
+```
 
-**Etterkontroll.** Fem sekunder etter aktivering sjekkes det at lysene faktisk er av. De
-som fortsatt står på, får ett nytt forsøk, og loggen navngir dem:
+Standardverdien er nå konstanten `5`, som alle de andre feltene i skjemaet bruker.
 
-> Nattmodus: disse lysene sto fortsatt på etter avslåingen, prøver igjen: light.stue.
-> Skjer det hver gang, slår noe dem på igjen — en bevegelsesautomasjon, en bryter på
-> veggen, eller en scene som kjører etterpå.
+**Oppslaget var også unødvendig.** Options-flyten kaller
+`add_suggested_values_to_schema(SCHEMA, self.config_entry.options)`, som alt fyller inn
+lagrede verdier i hvert felt. Etterkontrollen fikk derfor riktig verdi uansett — linja
+gjorde ingenting annet enn å knekke importen.
 
-Nattlys røres ikke. `etterkontroll: 0` slår kontrollen av, og feltet ligger i oppsettet.
+### Kontrollert
 
-**Lys i begge lister.** Står et lys både i «lys som slås av» og i «nattlys», vinner
-nattlys — og lyset blir aldri slått av. Det er en oppsettfeil som ser ut som en
-programfeil. Nå advares det i loggen med entitets-id-en.
-
-## Hva du bør sjekke
-
-Kjør nattmodus én gang og se i loggen. Får du advarselen om etterkontroll hver gang for
-samme lys, er det noe som slår det på igjen — og da hjelper ingen endring her; det er
-automasjonen eller scenen som må finnes. Får du den bare av og til, var det et treg
-enhet, og det nye forsøket ordner det.
+Alle seks modulene importeres nå slik Home Assistant gjør det, og `SCHEMA` bygges med
+`etterkontroll: 5` blant standardverdiene. De fem eksisterende testene passerer.
