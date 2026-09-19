@@ -19,6 +19,8 @@ from .const import (
     CONF_ETTERKONTROLL,
     CONF_GARDINER,
     CONF_GJENOPPRETT,
+    CONF_HJEMME_ENTITETER,
+    CONF_KREVER_HJEMME,
     CONF_KUN_HJEMME,
     CONF_LASER,
     CONF_LYS_AV,
@@ -98,10 +100,51 @@ class Nattmodus:
         return _kjor
 
     def _noen_hjemme(self) -> bool:
+        """Er noen hjemme?
+
+        Er det valgt egne entiteter, er det de som gjelder — og de kan være hva som
+        helst: `person`, `device_tracker`, eller en bryter du styrer selv. En bryter er
+        ofte det eneste som fungerer på en hytte, der telefonene er hjemme i
+        HA-forstand fordi sonen ligger der.
+
+        Er ingen valgt, teller vi alle `person`-entiteter som før, så eksisterende
+        oppsett er uendret.
+
+        «Hjemme» er `home` eller `on`. De to dekker person, device_tracker, switch,
+        input_boolean og binary_sensor uten at vi må vite hvilken type det er.
+        """
+        egne = self._liste(CONF_HJEMME_ENTITETER)
+        if egne:
+            return any(
+                (st := self.hass.states.get(eid)) is not None
+                and st.state in ("home", "on")
+                for eid in egne
+            )
         return any(
             st.state == "home"
             for st in self.hass.states.async_all("person")
         )
+
+    def _krever_hjemme(self, eid: str) -> bool:
+        """Står entiteten på lista over ting som bare skal skje når noen er hjemme?"""
+        return eid in self._liste(CONF_KREVER_HJEMME)
+
+    def _filtrer(self, ids: list[str]) -> list[str]:
+        """Fjerner det som krever at noen er hjemme, når ingen er det.
+
+        Filteret ligger her og ikke i hver enkelt handling, slik at det virker uansett
+        hvilken liste entiteten står i — lys, låser, gardiner eller scener.
+        """
+        krever = self._liste(CONF_KREVER_HJEMME)
+        if not krever:
+            return ids
+        if self._noen_hjemme():
+            return ids
+        beholdt = [e for e in ids if e not in krever]
+        for e in ids:
+            if e in krever:
+                _LOGGER.debug("Nattmodus: hopper over %s — ingen hjemme", e)
+        return beholdt
 
     # ------------------------------------------------------------ handlinger
     async def _call(self, domain: str, service: str, entity_ids: list[str], **data: Any) -> None:
@@ -113,6 +156,7 @@ class Nattmodus:
         hele lista. Nå prøver vi én og én etterpå, så resten blir slått av og loggen
         peker på entiteten som faktisk er problemet.
         """
+        entity_ids = self._filtrer(entity_ids)
         if not entity_ids:
             return
         try:
@@ -261,7 +305,7 @@ class Nattmodus:
         async_dispatcher_send(self.hass, SIGNAL_OPPDATERT)
 
     async def _kjor_scener(self, ids: list[str]) -> None:
-        for eid in ids:
+        for eid in self._filtrer(ids):
             dom = eid.split(".")[0]
             if dom == "scene":
                 await self._call("scene", "turn_on", [eid])

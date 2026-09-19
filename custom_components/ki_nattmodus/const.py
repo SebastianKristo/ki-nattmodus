@@ -16,7 +16,11 @@ CONF_GJENOPPRETT = "gjenopprett"    # gjenopprett lys slik de var, ved deaktiver
 CONF_NATTLYS_AV_VED_DEAKT = "nattlys_av_ved_deaktivering"
 CONF_TID_PA = "tid_pa"              # automatisk aktivering (HH:MM)
 CONF_TID_AV = "tid_av"              # automatisk deaktivering (HH:MM)
-CONF_KUN_HJEMME = "kun_hjemme"      # bare automatisk hvis noen er hjemme (person.*)
+CONF_KUN_HJEMME = "kun_hjemme"      # bare automatisk hvis noen er hjemme
+# Hvilke entiteter som avgjør om noen er hjemme. Tom liste = alle person.* som før.
+CONF_HJEMME_ENTITETER = "hjemme_entiteter"
+# Ting som BARE skal gjøres når noen er hjemme. Resten kjører uansett.
+CONF_KREVER_HJEMME = "krever_hjemme"
 # Sekunder etter aktivering før vi sjekker at lysene faktisk ble slukket, og prøver
 # en gang til på dem som fortsatt står på. 0 slår kontrollen av.
 CONF_ETTERKONTROLL = "etterkontroll"

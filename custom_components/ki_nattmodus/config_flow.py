@@ -14,6 +14,8 @@ from .const import (
     CONF_GARDINER,
     CONF_GJENOPPRETT,
     CONF_ETTERKONTROLL,
+    CONF_HJEMME_ENTITETER,
+    CONF_KREVER_HJEMME,
     CONF_KUN_HJEMME,
     CONF_LASER,
     CONF_LYS_AV,
@@ -52,6 +54,17 @@ SCHEMA = vol.Schema(
         vol.Optional(CONF_TID_PA): selector.TimeSelector(),
         vol.Optional(CONF_TID_AV): selector.TimeSelector(),
         vol.Optional(CONF_KUN_HJEMME, default=False): selector.BooleanSelector(),
+        # Hvem som teller som hjemme. Tom = alle person-entiteter, som før.
+        # Brytere er med fordi en hytte ofte ikke kan skilles fra hjemme med sonene
+        # alene — da styrer man det selv med en bryter.
+        vol.Optional(CONF_HJEMME_ENTITETER): selector.EntitySelector(
+            selector.EntitySelectorConfig(
+                domain=["person", "device_tracker", "switch", "input_boolean",
+                        "binary_sensor"],
+                multiple=True)),
+        # Ting som bare skal gjøres når noen er hjemme. Resten kjører uansett.
+        vol.Optional(CONF_KREVER_HJEMME): selector.EntitySelector(
+            selector.EntitySelectorConfig(multiple=True)),
     }
 )
 
